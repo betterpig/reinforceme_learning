@@ -100,11 +100,13 @@ class DQN():
     #print(self.q_net.layer2.weight.data)
     return loss
 
-  def egreedy_action(self,state):
+  def egreedy_action(self,state,total_steps):
     state=t.from_numpy(state) #先把np转化成Tensor
     state=state.float().view(1,4)
     Q_value = self.q_net(state) #计算该状态的每个动作的价值
     Q_value=Q_value.detach().numpy()
+    if abs(Q_value[0][0]-Q_value[0][1])<1e-5 and total_steps>10000:
+      count=count+1
     if self.epsilon>0.1:
       self.epsilon *= 0.999#epsilon随着迭代不断减小，使其更加接近target policy
     if random.random() <= self.epsilon:
@@ -129,16 +131,14 @@ def main():
   # initialize OpenAI Gym env and dqn agent
   env = gym.make(ENV_NAME)  #生成环境
   agent = DQN(env)
-
+  is_converge=False
   plt.ion()
   total_steps=0
   
-  steps_ave=[]
-  steps_per=[]
+  #steps_ave=[]
+  #steps_per=[]
   losses=[]
-  average_loss=[]
-  
-  total_loss=1000
+  count=0
   for episode in range(EPISODE):
     # initialize task
     state = env.reset()
@@ -147,10 +147,14 @@ def main():
     episode_loss=0
     
     for step in range(STEP):
-      if total_loss<0.05 and total_steps>20000:
+      if is_converge :
         break
       env.render()    # 刷新环境
-      action = agent.egreedy_action(state) # e-greedy action for train
+      action = agent.egreedy_action(state,total_steps) # e-greedy action for train
+      if count>20 :
+        is_converge=True
+        break
+      
       next_state,reward,done,_ = env.step(action)
 
       #x, x_dot, theta, theta_dot = next_state
@@ -166,13 +170,12 @@ def main():
       episode_loss=episode_loss+loss
       
       if done:
-        total_loss=episode_loss
         break
 
-    losses.append(episode_loss/(steps))  
-    total_steps=total_steps+steps #查看训练效果
-    steps_per.append(steps)
-    steps_ave.append(total_steps/(episode+1))
+    losses.append(episode_loss/(steps+1))  
+    #total_steps=total_steps+steps #查看训练效果
+    #steps_per.append(steps)
+    #steps_ave.append(total_steps/(episode+1))
     print('episode:',episode,'  steps ：',steps)
     # Test every 100 episodes
     if episode % 100 == 0:  #测试10次的平均reward，采用target policy
@@ -195,10 +198,10 @@ def main():
       ave_reward = total_reward/TEST
       print ('episode: ',episode,'Evaluation Average Reward:',ave_reward)
   
-  #plt.plot(steps_ave)
-  #plt.plot(steps_per)
-  #plt.show()
-  #plt.savefig('./steps.jpg')
+  plt.plot(steps_ave)
+  plt.plot(steps_per)
+  plt.show()
+  plt.savefig('./steps.png')
 
 if __name__ == '__main__':
   main()
