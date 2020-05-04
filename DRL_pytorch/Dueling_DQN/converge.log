@@ -1,0 +1,143 @@
+episode: 0   steps ： 11
+episode: 1   steps ： 10
+episode: 2   steps ： 16
+episode: 3   steps ： 14
+episode: 4   steps ： 9
+episode: 5   steps ： 12
+episode: 6   steps ： 10
+episode: 7   steps ： 15
+episode: 8   steps ： 14
+episode: 9   steps ： 15
+episode: 10   steps ： 13
+episode: 11   steps ： 13
+episode: 12   steps ： 10
+episode: 13   steps ： 8
+episode: 14   steps ： 11
+episode: 15   steps ： 14
+episode: 16   steps ： 10
+episode: 17   steps ： 12
+episode: 18   steps ： 14
+episode: 19   steps ： 13
+episode: 20   steps ： 21
+episode: 21   steps ： 14
+episode: 22   steps ： 16
+episode: 23   steps ： 12
+episode: 24   steps ： 16
+episode: 25   steps ： 12
+episode: 26   steps ： 22
+episode: 27   steps ： 14
+episode: 28   steps ： 19
+episode: 29   steps ： 23
+episode:  29 Evaluation Average Reward: 14.1
+episode: 30   steps ： 13
+episode: 31   steps ： 21
+episode: 32   steps ： 33
+episode: 33   steps ： 32
+episode: 34   steps ： 47
+episode: 35   steps ： 58
+episode: 36   steps ： 54
+episode: 37   steps ： 62
+episode: 38   steps ： 95
+episode: 39   steps ： 32
+episode: 40   steps ： 47
+episode: 41   steps ： 70
+episode: 42   steps ： 60
+episode: 43   steps ： 88
+episode: 44   steps ： 64
+episode: 45   steps ： 72
+episode: 46   steps ： 63
+episode: 47   steps ： 39
+episode: 48   steps ： 31
+episode: 49   steps ： 42
+episode: 50   steps ： 49
+episode: 51   steps ： 35
+episode: 52   steps ： 76
+episode: 53   steps ： 29
+episode: 54   steps ： 112
+episode: 55   steps ： 91
+episode: 56   steps ： 15
+episode: 57   steps ： 59
+episode: 58   steps ： 39
+episode: 59   steps ： 95
+episode:  59 Evaluation Average Reward: 102.2
+episode: 60   steps ： 68
+episode: 61   steps ： 70
+episode: 62   steps ： 49
+episode: 63   steps ： 52
+episode: 64   steps ： 39
+episode: 65   steps ： 41
+episode: 66   steps ： 40
+episode: 67   steps ： 46
+episode: 68   steps ： 49
+episode: 69   steps ： 59
+episode: 70   steps ： 49
+episode: 71   steps ： 86
+episode: 72   steps ： 67
+episode: 73   steps ： 73
+episode: 74   steps ： 49
+episode: 75   steps ： 77
+episode: 76   steps ： 103
+episode: 77   steps ： 116
+episode: 78   steps ： 200
+episode: 79   steps ： 121
+episode: 80   steps ： 116
+episode: 81   steps ： 76
+episode: 82   steps ： 87
+episode: 83   steps ： 103
+episode: 84   steps ： 118
+episode: 85   steps ： 92
+episode: 86   steps ： 111
+episode: 87   steps ： 58
+episode: 88   steps ： 110
+episode: 89   steps ： 115
+episode:  89 Evaluation Average Reward: 186.5
+episode: 90   steps ： 78
+episode: 91   steps ： 81
+episode: 92   steps ： 92
+episode: 93   steps ： 79
+episode: 94   steps ： 96
+episode: 95   steps ： 200
+episode: 96   steps ： 200
+episode: 97   steps ： 133
+episode: 98   steps ： 200
+episode: 99   steps ： 158
+episode: 100   steps ： 200
+episode: 101   steps ： 200
+episode: 102   steps ： 200
+episode: 103   steps ： 200
+episode: 104   steps ： 200
+episode: 105   steps ： 195
+episode: 106   steps ： 185
+episode: 107   steps ： 200
+episode: 108   steps ： 200
+episode: 109   steps ： 200
+episode: 110   steps ： 200
+episode: 111   steps ： 200
+episode: 112   steps ： 200
+episode: 113   steps ： 200
+episode: 114   steps ： 200
+episode: 115   steps ： 200
+episode: 116   steps ： 200
+episode: 117   steps ： 200
+episode: 118   steps ： 200
+episode: 119   steps ： 200
+episode:  119 Evaluation Average Reward: 200.0
+episode: 120   steps ： 200
+episode: 121   steps ： 200
+episode: 122   steps ： 200
+episode: 123   steps ： 200
+episode: 124   steps ： 200
+episode: 125   steps ： 200
+episode: 126   steps ： 200
+episode: 127   steps ： 200
+episode:  149 Evaluation Average Reward: 200.0
+episode:  179 Evaluation Average Reward: 200.0
+episode:  209 Evaluation Average Reward: 200.0
+episode:  239 Evaluation Average Reward: 200.0
+episode:  269 Evaluation Average Reward: 200.0
+episode:  299 Evaluation Average Reward: 200.0
+episode:  329 Evaluation Average Reward: 200.0
+episode:  359 Evaluation Average Reward: 200.0
+episode:  389 Evaluation Average Reward: 200.0
+episode:  419 Evaluation Average Reward: 200.0
+episode:  449 Evaluation Average Reward: 200.0
