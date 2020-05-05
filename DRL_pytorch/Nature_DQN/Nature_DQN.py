@@ -202,10 +202,21 @@ def main():
       ave_reward = total_reward/TEST
       print ('episode: ',episode,'Evaluation Average Reward:',ave_reward)
   
-  plt.plot(losses)
-  plt.plot(steps_per)
-  plt.show()
-  plt.savefig('learning_curve.png')
-  t.save(agent.target_net,'Nature_DQN.pkl')
+  fig=plt.figure()
+  ax1=fig.add_subplot(111)
+  ax1.plot(steps_per,'b')
+  ax1.set_ylabel('steps in each episode')
+  ax1.set_title("leaning curves")
+
+  ax2 = ax1.twinx()
+  ax2.plot(losses,'r')
+  ax2.set_ylabel('average loss of steps in each episode')
+  #plt.show()
+
+  script_path = os.path.realpath(__file__)
+  script_dir = os.path.dirname(script_path)
+  path=script_dir+'\\learning_curve.png'
+  plt.savefig(path,dpi=1200)
+  t.save(agent.target_net,script_dir+'\\net_model.pkl')
 if __name__ == '__main__':
   main()
