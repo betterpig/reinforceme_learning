@@ -14,7 +14,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-GAMMA = 0.9 # discount factor
+GAMMA = 0.99 # discount factor
+lr_mu        = 0.0005
+lr_q         = 0.001
+gamma        = 0.99
+batch_size   = 32
+buffer_limit = 50000
+tau          = 0.005 # for target network soft update
 t.set_default_tensor_type(t.DoubleTensor)
 
 class Q_net(t.nn.Module):
