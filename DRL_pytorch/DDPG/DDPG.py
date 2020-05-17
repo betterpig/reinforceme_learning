@@ -6,12 +6,20 @@ import matplotlib.pyplot as plt
 from collections import deque
 import random
 import time
+t.set_default_tensor_type(t.DoubleTensor)
+from torch.nn import init
+#define the initial function to init the layer's parameters for the network
+def param_init(net):
+    for m in net.modules():
+        if isinstance(m, t.nn.Linear):
+            init.constant(m.weight, 0.01)
+            init.constant(m.bias, 0.01)
+
 
 GAMMA = 0.99 # discount factor for target Q
 REPLAY_SIZE = 50000 # experience replay buffer size
 BATCH_SIZE = 32 # size of minibatch
 TAU=0.005
-t.set_default_tensor_type(t.DoubleTensor)
 
 class Q_net(t.nn.Module):
     def __init__(self):
@@ -32,8 +40,8 @@ class Policy_net(t.nn.Module):
     def __init__(self):
         t.nn.Module.__init__(self)
         self.state_hidden1 = t.nn.Linear(3, 128)# 输入层到隐藏层
-        self.hidden1_hidden2= t.nn.Linear(128,32) 
-        self.hidden2_output = t.nn.Linear(32,1)#隐藏层到输出层
+        self.hidden1_hidden2= t.nn.Linear(128,64) 
+        self.hidden2_output = t.nn.Linear(64,1)#隐藏层到输出层
     def forward(self,x):#前向传播
         x=t.relu(self.state_hidden1(x))
         x = t.relu(self.hidden1_hidden2(x))
@@ -45,11 +53,13 @@ class DDPG():
     def __init__(self):
         self.replay_buffer = deque()
         self.current_actor=Policy_net()
+        #param_init(self.current_actor)
         self.target_actor=Policy_net()
         self.target_actor.load_state_dict(self.current_actor.state_dict())
         self.actor_optim = t.optim.Adam(params=self.current_actor.parameters(), lr=0.0005)
 
         self.current_critic=Q_net()
+        #param_init(self.current_critic)
         self.target_critic=Q_net()
         self.target_critic.load_state_dict(self.current_critic.state_dict())
         self.critic_optim=t.optim.Adam(params=self.current_critic.parameters(), lr=0.001)
@@ -61,20 +71,16 @@ class DDPG():
 
     def learn(self):
         minibatch = random.sample(self.replay_buffer,BATCH_SIZE)  #采样
-        state_batch = t.from_numpy(np.array([data[0] for data in minibatch])).view(BATCH_SIZE,-1)
-        action_batch = t.from_numpy(np.array([data[1] for data in minibatch])).view(BATCH_SIZE,-1)
-        reward_batch = t.from_numpy(np.array([data[2] for data in minibatch])).view(BATCH_SIZE,-1)
-        next_state_batch = t.from_numpy(np.array([data[3] for data in minibatch])).view(BATCH_SIZE,-1)
+        '''minibatch = self.replay_buffer[-1]
+        state_batch = t.tensor(minibatch[0]).view(1,-1)
+        action_batch = t.tensor(minibatch[1]).view(1,-1)
+        reward_batch = t.tensor(minibatch[2]).view(1,-1)
+        next_state_batch = t.tensor(minibatch[3]).view(1,-1)'''
+        state_batch = t.tensor([data[0] for data in minibatch])
+        action_batch = t.tensor([data[1] for data in minibatch]).view(BATCH_SIZE,-1)
+        reward_batch = t.tensor([data[2] for data in minibatch]).view(BATCH_SIZE,-1)
+        next_state_batch = t.tensor([data[3] for data in minibatch])
         
-        actions=self.current_actor(state_batch)
-        current_values = self.current_critic(state_batch,actions)
-        actor_loss=-t.mean(current_values)
-        self.current_actor.zero_grad()
-        actor_loss.backward(retain_graph=True)
-        #print(self.current_actor.hidden2_output.weight.data,self.current_actor.hidden2_output.weight.grad)
-        self.actor_optim.step()
-        #print(self.current_actor.hidden2_output.weight.data)
-
         next_action_batch=self.target_actor(next_state_batch)
         current_values = self.current_critic(state_batch,action_batch)
         target_values = reward_batch + GAMMA * self.target_critic(next_state_batch,next_action_batch)
@@ -85,14 +91,25 @@ class DDPG():
         critic_loss.backward()
         #print(self.current_critic.hidden2_output.weight.data,self.current_critic.hidden2_output.weight.grad)
         self.critic_optim.step()
-        #print(self.current_critic.hidden2_output.weight.data)      
+        #print(self.current_critic.hidden2_output.weight.data)  
+
+        actions=self.current_actor(state_batch)
+        current_values = self.current_critic(state_batch,actions)
+        actor_loss=-t.mean(current_values)
+        self.current_actor.zero_grad()
+        actor_loss.backward()
+        #print(self.current_actor.hidden2_output.weight.data,self.current_actor.hidden2_output.weight.grad)
+        self.actor_optim.step()
+        #print(self.current_actor.hidden2_output.weight.data)
+
+            
     
     def update_target_net(self):
         for target_param,current_param in zip(self.target_critic.parameters(),self.current_critic.parameters()):
-            target_param=TAU*current_param+(1-TAU)*target_param
+            target_param.data.copy_(TAU*current_param.data+(1-TAU)*target_param.data)
         
         for target_param,current_param in zip(self.target_actor.parameters(),self.current_actor.parameters()):
-            target_param=TAU*current_param+(1-TAU)*target_param
+            target_param.data.copy_(TAU*current_param.data+(1-TAU)*target_param.data)
 
 
 class OrnsteinUhlenbeckNoise:
@@ -116,23 +133,22 @@ def main():
   # initialize OpenAI Gym env and dqn agent
     ENV_NAME = 'Pendulum-v0'
     env = gym.make(ENV_NAME)
+    #env.seed(0)
     agent = DDPG()
 
-    episode_rewards=[]
-    count=0
-    test_num=0
-    is_converge=False
     ou_noise = OrnsteinUhlenbeckNoise(mu=np.zeros(1))
     rewards=0
     for episode in range(EPISODE):
-        if test_num>10:
-            break
+        '''if test_num>10:
+            break'''
         #start=time.time()
         state = env.reset() # initialize task
         for step in range(300):
-            #env.render()    # 刷新环境
+            if episode % 20==0 and episode!=0:
+                env.render()
             action = agent.current_actor(t.from_numpy(state))
             action=action.item()+ou_noise()[0]
+            #action=action.item()
             next_state,reward,done,_ = env.step([action])
             
             agent.store_transition(state,action,reward/100,next_state,done)
@@ -154,7 +170,7 @@ def main():
         #a=(end-start)*1000
         #print(a)
         # Test every 100 episodes
-        if (episode+1) % 200 == 0 and episode>1000:  #测试10次的平均reward，采用target policy
+        '''if (episode+1) % 200 == 0 and episode>1000:  #测试10次的平均reward，采用target policy
             if is_converge:
                 test_num=test_num+1
 
@@ -186,7 +202,7 @@ def main():
     path=script_dir+'\\learning_curve.png'
     plt.savefig(path,dpi=1200)
     #t.save(agent.actor_net,script_dir+'\\actor_net_model.pkl')
-    #t.save(agent.critic_net,script_dir+'\\critic_net_model.pkl')
+    #t.save(agent.critic_net,script_dir+'\\critic_net_model.pkl')'''
 
 if __name__ == '__main__':
     main()

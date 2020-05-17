@@ -7,6 +7,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import time
+torch.set_default_tensor_type(torch.FloatTensor)
+from torch.nn import init
+#define the initial function to init the layer's parameters for the network
+def param_init(net):
+    for m in net.modules():
+        if isinstance(m, torch.nn.Linear):
+            init.constant(m.weight, 0.01)
+            init.constant(m.bias, 0.01)
 
 #Hyperparameters
 lr_mu        = 0.0005
@@ -85,18 +93,26 @@ class OrnsteinUhlenbeckNoise:
         return x
       
 def train(mu, mu_target, q, q_target, memory, q_optimizer, mu_optimizer):
-    s,a,r,s_prime,done_mask  = memory.sample(batch_size)
-    
+    #s,a,r,s_prime,done_mask  = memory.sample(batch_size)
+    minibatch = memory.buffer[-1]
+    s = torch.tensor(minibatch[0]).view(1, -1).float()
+    a = torch.tensor(minibatch[1]).view(1, -1).float()
+    r = torch.tensor(minibatch[2]).view(1, -1).float()
+    s_prime = torch.tensor(minibatch[3]).view(1, -1).float()
     target = r + gamma * q_target(s_prime, mu_target(s_prime))
     q_loss = F.smooth_l1_loss(q(s,a), target.detach())
     q_optimizer.zero_grad()
     q_loss.backward()
+    #print(q.fc_3.weight.data, q.fc_3.weight.grad)
     q_optimizer.step()
+    #print(q.fc_3.weight.data)
     
     mu_loss = -q(s,mu(s)).mean() # That's all for the policy loss.
     mu_optimizer.zero_grad()
     mu_loss.backward()
+    #print(mu.fc_mu.weight.data, mu.fc_mu.weight.grad)
     mu_optimizer.step()
+    #print(mu.fc_mu.weight.data)
     
 def soft_update(net, net_target):
     for param_target, param in zip(net_target.parameters(), net.parameters()):
@@ -104,11 +120,14 @@ def soft_update(net, net_target):
     
 def main():
     env = gym.make('Pendulum-v0')
+    #env.seed(0)
     memory = ReplayBuffer()
 
     q, q_target = QNet(), QNet()
+    #param_init(q)
     q_target.load_state_dict(q.state_dict())
     mu, mu_target = MuNet(), MuNet()
+    #param_init(mu)
     mu_target.load_state_dict(mu.state_dict())
 
     score = 0.0
@@ -122,10 +141,11 @@ def main():
         s = env.reset()
         #start=time.time()
         for t in range(300): # maximum length of episode is 200 for Pendulum-v0
-            #if n_epi>800:
-            #env.render()
+            if n_epi % print_interval==0 and n_epi!=0:
+                env.render()
             a = mu(torch.from_numpy(s).float()) 
-            a = a.item() + ou_noise()[0]
+            #a = a.item() + ou_noise()[0]
+            a = a.item()
             s_prime, r, done, info = env.step([a])
             memory.put((s,a,r/100.0,s_prime,done))
             score +=r

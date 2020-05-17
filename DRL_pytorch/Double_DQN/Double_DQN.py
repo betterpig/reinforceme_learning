@@ -18,7 +18,7 @@ from collections import deque
 import matplotlib.pyplot as plt
 import copy
 import os
-
+t.set_default_tensor_type(t.FloatTensor)
 # Hyper Parameters for DQN
 GAMMA = 0.9 # discount factor for target Q
 INITIAL_EPSILON = 0.5 # starting value of epsilon
@@ -71,10 +71,11 @@ class Nature_DQN():
     self.time_step += 1
     # Step 1: obtain random minibatch from replay memory
     minibatch = random.sample(self.replay_buffer,BATCH_SIZE)  #采样
-    state_batch = t.from_numpy(np.array([data[0] for data in minibatch])).view(BATCH_SIZE,-1).float()
-    action_batch =t.from_numpy( np.array([data[1] for data in minibatch])).view(BATCH_SIZE,-1).float()
-    reward_batch = t.from_numpy(np.array([data[2] for data in minibatch])).view(BATCH_SIZE,-1).float()
-    next_state_batch = t.from_numpy(np.array([data[3] for data in minibatch])).view(BATCH_SIZE,-1).float()
+
+    state_batch = t.tensor([data[0] for data in minibatch])
+    action_batch =t.tensor( [data[1] for data in minibatch]).view(BATCH_SIZE,-1)
+    reward_batch = t.tensor([data[2] for data in minibatch]).view(BATCH_SIZE,-1)
+    next_state_batch = t.tensor([data[3] for data in minibatch])
 
     #step 2:calculate current #计算实际值
     y_2=self.current_net(state_batch)
