@@ -145,18 +145,18 @@ def main():
     while not is_converge:
       env.render()    # 刷新环境
       action = agent.egreedy_action(state) # e-greedy action for train
-      if count>20 :
+      if count>10 :
         is_converge=True
         break
       
       next_state,reward,done,_ = env.step(action)
 
-      x, x_dot, theta, theta_dot = next_state
+      '''x, x_dot, theta, theta_dot = next_state
       r1 = (env.x_threshold - abs(x))/env.x_threshold - 0.8
       r2 = (env.theta_threshold_radians - abs(theta))/env.theta_threshold_radians - 0.5
-      reward = r1 + r2 +1  # 总 reward 是 r1 和 r2 的结合, 既考虑位置, 也考虑角度, 这样 DQN 学习更有效率
+      reward = r1 + r2 +1 ''' # 总 reward 是 r1 和 r2 的结合, 既考虑位置, 也考虑角度, 这样 DQN 学习更有效率
       #Define reward for agent
-      reward = -1 if done else reward
+      #reward = -1 if done else reward
       loss=agent.perceive(state,action,reward,next_state,done)
       state = next_state
       
@@ -175,7 +175,7 @@ def main():
       steps_per.append(steps)
       print('episode:',episode,'  steps ：',steps)
     # Test every 100 episodes
-    if (episode+1) % 100 == 0:  #测试10次的平均reward，采用target policy
+    if (episode+1) % 50 == 0:  #测试10次的平均reward，采用target policy
       if is_converge:
         test_num=test_num+1
 
@@ -190,6 +190,8 @@ def main():
           if done:
             break
       ave_reward = total_reward/TEST
+      if ave_reward==200 :
+        is_converge=True
       print ('episode: ',episode,'Evaluation Average Reward:',ave_reward)
   
   plt.plot(steps_per)

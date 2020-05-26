@@ -72,10 +72,10 @@ class Nature_DQN():
     # Step 1: obtain random minibatch from replay memory
     minibatch = random.sample(self.replay_buffer,BATCH_SIZE)  #采样
 
-    state_batch = t.tensor([data[0] for data in minibatch])
-    action_batch =t.tensor( [data[1] for data in minibatch]).view(BATCH_SIZE,-1)
-    reward_batch = t.tensor([data[2] for data in minibatch]).view(BATCH_SIZE,-1)
-    next_state_batch = t.tensor([data[3] for data in minibatch])
+    state_batch = t.tensor([data[0] for data in minibatch]).float()
+    action_batch =t.tensor( [data[1] for data in minibatch]).view(BATCH_SIZE,-1).float()
+    reward_batch = t.tensor([data[2] for data in minibatch]).view(BATCH_SIZE,-1).float()
+    next_state_batch = t.tensor([data[3] for data in minibatch]).float()
 
     #step 2:calculate current #计算实际值
     y_2=self.current_net(state_batch)
